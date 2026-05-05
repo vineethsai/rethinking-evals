@@ -1,0 +1,759 @@
+/* =============================================================================
+ * MANIFOLD OF FAILURE — NEWSPRINT DESIGN SYSTEM
+ * "All the data that's fit to print."
+ *
+ * This stylesheet is loaded last so it can override the bundled Tailwind
+ * tokens. It encodes the full Newsprint design system:
+ *   - Single light palette (off-white paper, ink black, editorial red).
+ *   - Serif display + body (Playfair Display, Lora) over Inter (UI) and
+ *     JetBrains Mono (data). All typefaces self-host via Google Fonts.
+ *   - Zero border radius. Hard 4px offset shadow on hover.
+ *   - Visible grid borders, tight padding, justified prose.
+ *   - Subtle dot-grid paper texture; no soft drop shadows or blurs.
+ * ===========================================================================*/
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&display=swap");
+
+/* ---------- 1. Tokens ------------------------------------------------------ */
+:root,
+:root.dark,
+.dark {
+  /* Newsprint palette — single mode, even in .dark we render light. */
+  --background: #f9f9f7;          /* Newsprint Off-White */
+  --foreground: #111111;          /* Ink Black */
+  --card: #f9f9f7;
+  --card-foreground: #111111;
+  --popover: #f9f9f7;
+  --popover-foreground: #111111;
+  --primary: #111111;
+  --primary-foreground: #f9f9f7;
+  --secondary: #e5e5e0;
+  --secondary-foreground: #111111;
+  --muted: #e5e5e0;               /* Divider Grey */
+  --muted-foreground: #525252;
+  --accent: #cc0000;              /* Editorial Red */
+  --accent-foreground: #f9f9f7;
+  --destructive: #cc0000;
+  --border: #111111;              /* Borders ARE the structure */
+  --input: #111111;
+  --ring: #111111;
+
+  --color-slate-50: #f9f9f7;
+  --color-slate-200: #e5e5e0;
+  --color-slate-400: #737373;
+  --color-slate-800: #1a1a1a;
+  --color-slate-950: #111111;
+
+  --radius: 0px;
+  --radius-md: 0px;
+
+  /* Type scale tokens — used by various utility classes via Tailwind. */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+  --text-5xl: 3.5rem;
+  --text-7xl: 5.5rem;
+
+  --tracking-widest: 0.25em;
+
+  /* Local design tokens (only used by this stylesheet). */
+  --np-paper: #f9f9f7;
+  --np-ink: #111111;
+  --np-rule: #111111;
+  --np-mute: #e5e5e0;
+  --np-red: #cc0000;
+  --np-meta: #525252;
+
+  --np-font-display: "Playfair Display", "Times New Roman", Georgia, serif;
+  --np-font-body: "Lora", Georgia, "Times New Roman", serif;
+  --np-font-ui: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  --np-font-mono: "JetBrains Mono", "Courier New", ui-monospace, monospace;
+
+  --np-paper-dot: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23111' fill-opacity='0.06' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'/%3E%3C/svg%3E");
+}
+
+/* ---------- 2. Hard reset: zero radius, no soft effects -------------------- */
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Restore the one shadow we want — the 4px hard offset on cards. */
+[data-slot="card"]:hover,
+[data-slot="card"]:focus-within,
+.np-hard-shadow {
+  box-shadow: 4px 4px 0 0 var(--np-ink) !important;
+}
+
+/* ---------- 3. Page chrome ------------------------------------------------ */
+html {
+  background: var(--np-paper);
+  color: var(--np-ink);
+  font-family: var(--np-font-body);
+  font-feature-settings: "kern", "liga", "onum";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--np-paper) !important;
+  color: var(--np-ink) !important;
+  font-family: var(--np-font-body);
+  font-size: 17px;
+  line-height: 1.625;
+  background-image: var(--np-paper-dot);
+  background-attachment: fixed;
+}
+
+/* Force light mode tokens even when .dark is on the html element. The
+ * runtime script also strips .dark, but this is belt-and-braces. */
+html.dark {
+  color-scheme: light !important;
+}
+
+::selection {
+  background: var(--np-ink);
+  color: var(--np-paper);
+}
+
+/* ---------- 4. Typography ------------------------------------------------- */
+body,
+main,
+section,
+p,
+li,
+td,
+th,
+input,
+textarea,
+select {
+  font-family: var(--np-font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--np-font-display);
+  color: var(--np-ink);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-weight: 900;
+  margin-block: 0;
+}
+
+h1 { font-weight: 900; letter-spacing: -0.035em; }
+h2 { font-weight: 800; }
+h3 { font-weight: 700; }
+h4 { font-weight: 600; }
+
+/* Tailwind size classes get newspaper-scale type. */
+.text-4xl { font-size: clamp(2.25rem, 3vw + 1rem, 3.25rem) !important; line-height: 1.05 !important; }
+.text-5xl { font-size: clamp(3rem, 5vw + 1rem, 4.75rem) !important; line-height: 1 !important; }
+.text-7xl { font-size: clamp(3.5rem, 9vw + 1rem, 8rem) !important; line-height: 0.92 !important; }
+.text-3xl { font-size: clamp(1.75rem, 2vw + 1rem, 2.25rem) !important; line-height: 1.1 !important; }
+.text-2xl { font-size: 1.5rem !important; line-height: 1.15 !important; }
+
+/* Body prose */
+main p {
+  font-family: var(--np-font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--np-ink);
+  max-width: 70ch;
+}
+
+main p + p { margin-top: 0.75em; }
+
+main p strong,
+main strong { font-weight: 700; color: var(--np-ink); }
+main p em,
+main em { font-style: italic; }
+
+main blockquote {
+  border-left: 4px solid var(--np-ink);
+  padding-left: 1rem;
+  font-style: italic;
+  font-family: var(--np-font-body);
+}
+
+/* Long descriptions / lead-ins on inner pages → justified newspaper prose. */
+main .text-muted-foreground.mt-4.text-lg p,
+main .max-w-5xl p {
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  text-justify: inter-word;
+  font-size: 1.0625rem;
+}
+
+/* Inline code */
+code, kbd, samp, pre,
+.font-mono { font-family: var(--np-font-mono) !important; }
+
+main code:not(pre code) {
+  background: var(--np-mute);
+  border: 1px solid var(--np-ink);
+  padding: 0 0.35em;
+  font-size: 0.9em;
+}
+
+/* "Muted" text — newsprint metadata grey, monospace, uppercase by default. */
+.text-muted-foreground {
+  color: var(--np-meta) !important;
+}
+
+/* Tailwind text-foreground/60 — used in nav. Make it a strong newsprint grey. */
+.text-foreground\/60 { color: var(--np-meta) !important; }
+.text-foreground\/80,
+.text-foreground { color: var(--np-ink) !important; }
+
+/* ---------- 5. Links ------------------------------------------------------ */
+main a:not(:has(button)):not(:has([data-slot="card"])):not(.group\/button) {
+  color: var(--np-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--np-red);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  font-weight: 500;
+  transition: color 120ms ease;
+}
+main a:not(:has(button)):not(:has([data-slot="card"])):not(.group\/button):hover {
+  color: var(--np-red);
+}
+
+/* Cards/buttons wrapping anchors should stay clean. */
+header a,
+nav a,
+a:has(button),
+a:has([data-slot="card"]),
+a.group\/button { text-decoration: none !important; }
+
+/* ---------- 6. Header (masthead) ----------------------------------------- */
+header {
+  background: var(--np-paper) !important;
+  border-bottom: 4px double var(--np-ink) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Edition strip removed at user request. */
+header::before { content: none !important; display: none !important; }
+
+header > div.container {
+  height: auto !important;
+  padding-block: 0.85rem !important;
+  align-items: baseline !important;
+}
+
+/* Brand: italic Playfair, slightly tracked. */
+header a[href$="/rethinking-evals/"] span {
+  font-family: var(--np-font-display);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  color: var(--np-ink);
+}
+
+/* Nav: Inter, uppercase, monospace-tight. */
+header nav {
+  gap: 0 !important;
+  border-left: 1px solid var(--np-ink);
+  margin-left: 1.5rem !important;
+  padding-left: 1.5rem !important;
+}
+header nav a {
+  font-family: var(--np-font-ui) !important;
+  text-transform: uppercase;
+  font-size: 0.72rem !important;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  padding: 0.4rem 0.85rem;
+  color: var(--np-ink) !important;
+  border: 1px solid transparent;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+header nav a:hover {
+  background: var(--np-ink) !important;
+  color: var(--np-paper) !important;
+  border-color: var(--np-ink);
+}
+
+/* Hide the dark-mode toggle entirely — design is light-only. */
+header [data-slot="dropdown-menu-trigger"],
+header button[aria-haspopup="menu"] {
+  display: none !important;
+}
+
+/* Edition strip injected ABOVE the header (via runtime JS). Style here. */
+[data-np="edition-strip"] {
+  background: var(--np-ink);
+  color: var(--np-paper);
+  font-family: var(--np-font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  padding: 0.45rem 1.5rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25em;
+  border-bottom: 1px solid var(--np-ink);
+}
+[data-np="edition-strip"] .np-sep {
+  color: var(--np-red);
+  font-weight: 700;
+}
+[data-np="edition-strip"] .np-meta-red {
+  color: var(--np-red);
+  font-weight: 700;
+  letter-spacing: 0.4em;
+}
+
+/* ---------- 7. Hero (front page lead) ------------------------------------ */
+section.bg-slate-950 {
+  background: var(--np-paper) !important;
+  background-image: var(--np-paper-dot);
+  color: var(--np-ink) !important;
+  padding-block: 4rem 5rem !important;
+  border-bottom: 1px solid var(--np-ink);
+  position: relative;
+}
+
+/* BREAKING ribbon removed at user request. */
+section.bg-slate-950::before { content: none !important; display: none !important; }
+
+section.bg-slate-950::after {
+  /* Hero byline rendered as pseudo-element. */
+  content: "FILED BY THE MAP-ELITES BUREAU  ▪  LLAMA-3-8B  ▪  GPT-OSS-20B  ▪  GPT-5-MINI  ▪  15,000-EVAL BUDGET";
+  display: block;
+  font-family: var(--np-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--np-meta);
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--np-ink);
+  width: min(64ch, 92%);
+  margin-inline: auto;
+  align-self: center;
+}
+
+section.bg-slate-950 h1 {
+  font-family: var(--np-font-display) !important;
+  font-weight: 900 !important;
+  font-style: normal;
+  color: var(--np-ink) !important;
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
+  font-size: clamp(3.25rem, 11vw, 9rem) !important;
+  line-height: 0.9 !important;
+  letter-spacing: -0.045em !important;
+  max-width: 14ch !important;
+  margin-top: 1.5rem !important;
+  text-wrap: balance;
+}
+
+section.bg-slate-950 p {
+  font-family: var(--np-font-body) !important;
+  font-style: italic;
+  color: var(--np-ink) !important;
+  font-size: clamp(1.1rem, 1vw + 0.95rem, 1.4rem) !important;
+  max-width: 60ch !important;
+  margin-top: 1.25rem !important;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* (Hero byline is rendered as section.bg-slate-950::after — see above.) */
+
+/* CTA cluster */
+section.bg-slate-950 > div.mt-10 {
+  margin-top: 2.5rem !important;
+  gap: 0 !important;
+  border: 1px solid var(--np-ink);
+  display: inline-flex !important;
+}
+section.bg-slate-950 > div.mt-10 > a:not(:last-child) {
+  border-right: 1px solid var(--np-ink);
+}
+
+/* ---------- 8. Buttons ---------------------------------------------------- */
+button[data-slot="button"],
+a > button[data-slot="button"] {
+  font-family: var(--np-font-ui) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  font-size: 0.78rem !important;
+  padding: 0.85rem 1.4rem !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+/* Primary: solid black → invert to white-on-paper on hover. */
+button[data-slot="button"].bg-primary,
+a:hover > button[data-slot="button"].bg-primary {
+  background: var(--np-ink) !important;
+  color: var(--np-paper) !important;
+  border: 1px solid var(--np-ink) !important;
+}
+a:hover > button[data-slot="button"].bg-primary {
+  background: var(--np-paper) !important;
+  color: var(--np-ink) !important;
+}
+
+/* Secondary (white in original) → outline button. */
+button[data-slot="button"].bg-white {
+  background: var(--np-paper) !important;
+  color: var(--np-ink) !important;
+  border: 1px solid var(--np-ink) !important;
+}
+a:hover > button[data-slot="button"].bg-white {
+  background: var(--np-ink) !important;
+  color: var(--np-paper) !important;
+}
+
+/* Strip the existing icon size variation so the cluster looks tight. */
+button[data-slot="button"] svg { width: 0.95rem; height: 0.95rem; }
+
+/* ---------- 9. Section headers + ornaments ------------------------------- */
+main section { position: relative; }
+
+/* H2 pages (correlations, leaderboard, etc.) get a strong rule. */
+main h1 {
+  font-family: var(--np-font-display) !important;
+  font-weight: 900 !important;
+  font-size: clamp(2.5rem, 4vw + 1rem, 4rem) !important;
+  letter-spacing: -0.03em !important;
+  border-bottom: 4px solid var(--np-ink);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.25rem !important;
+  text-wrap: balance;
+}
+
+main h2 {
+  font-family: var(--np-font-display) !important;
+  font-weight: 800 !important;
+  font-size: clamp(1.75rem, 2.5vw + 0.5rem, 2.5rem) !important;
+  border-bottom: 1px solid var(--np-ink);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1rem !important;
+  display: block;
+}
+
+/* Centre-aligned "Dive Deeper" → newspaper section break. */
+main section h2.text-center {
+  text-align: center;
+  border-bottom: none;
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+main section h2.text-center::after {
+  content: "✦ ✦ ✦";
+  display: block;
+  font-size: 0.85rem;
+  letter-spacing: 1em;
+  color: var(--np-meta);
+  margin-top: 0.85rem;
+  padding-left: 1em; /* offset the trailing tracking */
+}
+
+/* Subtle paper texture on alt-toned sections. */
+section.bg-muted,
+.bg-muted {
+  background: var(--np-paper) !important;
+  background-image:
+    linear-gradient(0deg, transparent 96%, rgba(0,0,0,0.04) 100%),
+    linear-gradient(90deg, transparent 96%, rgba(0,0,0,0.04) 100%),
+    var(--np-paper-dot);
+  background-size: 4px 4px, 4px 4px, 4px 4px;
+  border-block: 1px solid var(--np-ink);
+}
+
+/* ---------- 10. Cards ---------------------------------------------------- */
+[data-slot="card"] {
+  background: var(--np-paper) !important;
+  border: 1px solid var(--np-ink) !important;
+  outline: none !important;
+  --tw-ring-shadow: none !important;
+  box-shadow: none !important;
+  transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+[data-slot="card"]:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 4px 4px 0 0 var(--np-ink) !important;
+  background: #ffffff !important;
+}
+a:hover [data-slot="card"] {
+  transform: translate(-3px, -3px);
+  box-shadow: 4px 4px 0 0 var(--np-ink) !important;
+  background: #ffffff !important;
+}
+
+[data-slot="card-header"] {
+  border-bottom: 1px solid var(--np-ink);
+  padding-bottom: 0.85rem !important;
+}
+[data-slot="card-title"] {
+  font-family: var(--np-font-display) !important;
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--np-ink);
+  text-transform: none;
+}
+[data-slot="card-description"] {
+  font-family: var(--np-font-mono) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.05em;
+  color: var(--np-meta) !important;
+  margin-top: 0.35rem;
+}
+
+/* Cards inside the "Dive Deeper" CTA grid get a bigger title. */
+section.bg-muted [data-slot="card-title"] {
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+}
+section.bg-muted [data-slot="card-content"] p {
+  font-family: var(--np-font-body) !important;
+  font-size: 0.95rem !important;
+  color: var(--np-ink) !important;
+}
+
+/* ---------- 11. Tables / leaderboards ----------------------------------- */
+table {
+  border-collapse: collapse;
+  border: 1px solid var(--np-ink);
+  font-variant-numeric: tabular-nums;
+  width: 100%;
+}
+th, td {
+  border-bottom: 1px solid var(--np-ink);
+  border-right: 1px solid var(--np-ink);
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+}
+th:last-child, td:last-child { border-right: none; }
+tr:last-child td { border-bottom: none; }
+
+th {
+  font-family: var(--np-font-ui);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  background: var(--np-mute);
+  color: var(--np-ink);
+}
+
+td { font-family: var(--np-font-body); font-size: 0.95rem; }
+td.font-mono, td:has(.font-mono) { font-family: var(--np-font-mono) !important; }
+
+tbody tr:hover { background: var(--np-mute); }
+
+/* ---------- 12. Stat / KPI tiles ---------------------------------------- */
+/* The leaderboard hero KPIs live inside generic divs with big numbers. */
+main .grid > div:has(> .text-3xl, > .text-4xl, > .text-5xl) {
+  border: 1px solid var(--np-ink);
+  padding: 1.25rem 1.5rem;
+  background: var(--np-paper);
+}
+
+/* Numbers in JetBrains Mono. */
+main .text-4xl.font-bold,
+main .text-3xl.font-bold,
+main .text-5xl.font-bold {
+  font-family: var(--np-font-mono) !important;
+  font-feature-settings: "tnum", "ss01";
+  letter-spacing: -0.02em;
+}
+
+/* Labels above numbers — uppercase tracked Inter. */
+main .uppercase,
+main [class*="uppercase"] {
+  font-family: var(--np-font-ui) !important;
+  letter-spacing: 0.2em !important;
+  font-weight: 600;
+}
+
+/* ---------- 13. Inputs / tabs ------------------------------------------- */
+input, textarea, select {
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--np-ink) !important;
+  font-family: var(--np-font-mono) !important;
+  font-size: 0.92rem;
+  padding: 0.5rem 0.65rem;
+  color: var(--np-ink);
+}
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  background: var(--np-mute) !important;
+  outline: none;
+}
+
+/* Tabs (e.g., correlations Run 0/1/2) — newspaper section tabs. */
+[role="tablist"] {
+  border: 1px solid var(--np-ink);
+  background: var(--np-paper) !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  gap: 0 !important;
+  height: auto !important;
+}
+[role="tab"] {
+  background: transparent !important;
+  color: var(--np-ink) !important;
+  font-family: var(--np-font-ui) !important;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.72rem !important;
+  padding: 0.6rem 1.1rem !important;
+  border-right: 1px solid var(--np-ink) !important;
+}
+[role="tab"]:last-child { border-right: none !important; }
+[role="tab"][aria-selected="true"] {
+  background: var(--np-ink) !important;
+  color: var(--np-paper) !important;
+}
+
+/* ---------- 14. Plotly / chart styling ---------------------------------- */
+.js-plotly-plot,
+.js-plotly-plot * {
+  font-family: var(--np-font-ui) !important;
+}
+.js-plotly-plot text { fill: var(--np-ink) !important; }
+.js-plotly-plot .modebar { filter: grayscale(1) contrast(1.1); }
+
+/* ---------- 15. Imagery -------------------------------------------------- */
+img:not([data-np-keep-color]) {
+  filter: grayscale(1) contrast(1.05);
+  transition: filter 200ms ease;
+}
+img:not([data-np-keep-color]):hover {
+  filter: grayscale(0.7) sepia(0.35) contrast(1.1);
+}
+
+/* ---------- 16. Focus ring (keyboard) ----------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--np-ink) !important;
+  outline-offset: 2px;
+}
+
+/* ---------- 17. Colophon removed at user request ------------------------ */
+main::after { content: none !important; display: none !important; }
+
+/* ---------- 18. Centroid plot kill-switch (defense in depth) ------------ */
+[data-mof-hide="attack-style-centroids"] { display: none !important; }
+
+/* ---------- 19. Drop cap on the homepage feature paragraph -------------- */
+main section.py-20 .grid.lg\:grid-cols-\[1fr_1\.5fr\] > div:first-child > p:first-of-type::first-letter,
+main section.py-20 .order-1.md\:order-2 > p:first-of-type::first-letter {
+  font-family: var(--np-font-display);
+  float: left;
+  font-size: 5.25rem;
+  line-height: 0.85;
+  font-weight: 900;
+  padding: 0.4rem 0.6rem 0 0;
+  margin-top: 0.05em;
+  color: var(--np-red);
+}
+
+/* ---------- 20. Nav active-link rule ------------------------------------ */
+header nav a[aria-current],
+header nav a[aria-current="page"] {
+  background: var(--np-ink);
+  color: var(--np-paper) !important;
+}
+
+/* ---------- 21. Mobile adaptations -------------------------------------- */
+@media (max-width: 767px) {
+  header > div.container { flex-wrap: wrap; gap: 0.5rem; }
+  header nav {
+    border-left: none !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    border-top: 1px solid var(--np-ink) !important;
+    width: 100%;
+    overflow-x: auto;
+    padding-block: 0.4rem !important;
+  }
+  section.bg-slate-950 { padding-block: 5rem 3.5rem !important; }
+  section.bg-slate-950 h1 { font-size: clamp(2.4rem, 11vw, 4.5rem) !important; }
+  main h1 { font-size: clamp(2rem, 7vw, 3rem) !important; }
+  [data-np="edition-strip"] { font-size: 0.6rem; letter-spacing: 0.2em; gap: 0.5em; }
+  section.bg-slate-950 > div.mt-10 { display: flex !important; flex-direction: column; }
+  section.bg-slate-950 > div.mt-10 > a:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid var(--np-ink);
+  }
+}
+
+/* ---------- 22. Misc cleanups ------------------------------------------- */
+hr { border: 0; border-top: 1px solid var(--np-ink); }
+
+button.transition-all,
+[role="tab"].transition-all { transition-duration: 160ms !important; }
+
+/* Strip any backdrop blur left over. */
+.backdrop-blur,
+.supports-backdrop-filter\:backdrop-blur-xs,
+.supports-\[backdrop-filter\]\:bg-background\/60 {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: var(--np-paper) !important;
+}
+
+/* Leaderboard / explore pills with bg-primary/10 etc. — make them flat. */
+[class*="bg-primary/"],
+[class*="bg-red-500/"],
+[class*="bg-green-500/"],
+[class*="bg-amber-500/"],
+[class*="bg-orange-500/"] {
+  background-color: var(--np-mute) !important;
+}
+[class*="text-red-500"],
+[class*="text-red-600"],
+[class*="text-red-700"],
+[class*="text-destructive"] { color: var(--np-red) !important; }
+[class*="text-green-500"],
+[class*="text-green-600"],
+[class*="text-green-700"],
+[class*="text-blue-500"],
+[class*="text-blue-600"],
+[class*="text-blue-700"],
+[class*="text-amber-500"],
+[class*="text-amber-700"],
+[class*="text-orange-500"],
+[class*="text-orange-700"],
+[class*="text-purple-500"],
+[class*="text-yellow-500"] { color: var(--np-ink) !important; }
+
+/* Progress-bar style pills (e.g., Harmless Refusal / Unsafe Compliance). */
+.h-2.w-full.rounded-full,
+.h-2.w-full {
+  background: var(--np-mute) !important;
+  border: 1px solid var(--np-ink);
+  height: 8px !important;
+}
+.h-2.w-full > div { background: var(--np-ink) !important; }
+.h-2.w-full > div.bg-red-500 { background: var(--np-red) !important; }

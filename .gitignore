@@ -1,0 +1,6 @@
+# Local dev / verification artifacts
+.playwright-cli/
+output/
+
+# Self-referencing symlink used to serve the GitHub Pages base path locally
+/rethinking-evals
