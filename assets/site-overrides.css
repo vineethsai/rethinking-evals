@@ -257,7 +257,7 @@ header > div.container {
 }
 
 /* Brand: italic Playfair, slightly tracked. */
-header a[href$="/rethinking-evals/"] span {
+header a[href$="/"] span {
   font-family: var(--np-font-display);
   font-weight: 700;
   font-style: italic;

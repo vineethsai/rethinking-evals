@@ -3,4 +3,4 @@
 output/
 
 # Self-referencing symlink used to serve the GitHub Pages base path locally
-/rethinking-evals
+rethinking-evals
